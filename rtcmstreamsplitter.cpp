@@ -27,7 +27,7 @@ uint16_t RTCMStreamSplitter::inputByte(uint8_t input) //ToDo Protocoll check
         if (_receiveStream[_receiveStreamLengthCtr - 2] == 0xD3 && _inLine == false){ // 211 Präamble
             if ((_receiveStream[_receiveStreamLengthCtr - 1] & B11111100) == 0){ //have to be always == 0
                 _inLine = true;
-                for (uint16_t i = 0; i < MAX_BUFFFERSIZE; i++){ //reset/clear outputstream
+                for (uint16_t i = 0; i < MAX_RTCM_BUFFFERSIZE ; i++){ //reset/clear outputstream
                     outputStream [i] = 0;
                 }
                 outputStreamLength = 0; //reset/clear outputstream
