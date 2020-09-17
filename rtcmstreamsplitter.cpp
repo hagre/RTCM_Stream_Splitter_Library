@@ -38,6 +38,22 @@ uint16_t RTCMStreamSplitter::inputByte(uint8_t input) //ToDo Protocoll check
                 _receiveStreamLengthCtr = 2;
             }
         }
+		else if (_receiveStreamLengthCtr > MAX_RTCM_BUFFFERSIZE - 5 && _inLine == false){ // short bevor buffer overrun and still nothing found yet
+            if (_receiveStream[_receiveStreamLengthCtr - 1] == 0xD3){ // 211 Präamble just started
+                if ((_receiveStream[_receiveStreamLengthCtr] & B11111100) == 0){ //have to be always == 0 and next byte is fitting for "inline"
+                    _receiveStream[0] = _receiveStream[_receiveStreamLengthCtr - 1];
+                    _receiveStream[1] = _receiveStream[_receiveStreamLengthCtr];
+                    _receiveStreamLengthCtr = 1; //seting everything up to "discover" a new inline in the next loop
+                }
+                else {
+                    _receiveStreamLengthCtr = -1;
+                }
+            }
+            else {
+                _receiveStreamLengthCtr = -1;
+            }    
+        }
+		
         if (_inLine == true && _receiveStreamLengthCtr >= _receiveStreamLength + 5){
             hashData (0, _receiveStreamLength+3);
             if (_inputStreamHash[0] == _receiveStream[_receiveStreamLengthCtr - 2]){
